@@ -21,4 +21,25 @@
         <context>JiraMCPServer</context>
     </web-resource>
     
+    <!-- MCP Server Servlet -->
+    <servlet name="MCP Server Servlet" key="mcpServerServlet" class="com.hanlinuniverse.playground.JiraMCPServer.servlet.McpServlet">
+        <description>Provides MCP protocol endpoints for AI integration</description>
+        <url-pattern>/mcp/*</url-pattern>
+    </servlet>
+    
+    <!-- MCP Configuration Servlet -->
+    <servlet name="MCP Configuration Servlet" key="mcpConfigServlet" class="com.hanlinuniverse.playground.JiraMCPServer.servlet.ConfigServlet">
+        <description>Configuration UI for MCP Server</description>
+        <url-pattern>/mcp-config</url-pattern>
+    </servlet>
+    
+    <!-- Hello World Servlet (Example) -->
+    <servlet name="Hello World Servlet" key="helloWorldServlet" class="com.example.servlets.HelloWorldServlet">
+        <description>A simple servlet that says hello.</description>
+        <url-pattern>/hello</url-pattern>
+        <init-param>
+            <param-name>defaultName</param-name>
+            <param-value>Atlassian User</param-value>
+        </init-param>
+    </servlet>
 </atlassian-plugin>
