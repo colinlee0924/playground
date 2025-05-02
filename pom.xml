@@ -240,6 +240,7 @@
 
     <build>
         <plugins>
+            <!-- Replace the jira-maven-plugin configuration with this -->
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>jira-maven-plugin</artifactId>
@@ -249,68 +250,85 @@
                     <productVersion>${jira.version}</productVersion>
                     <productDataVersion>${jira.version}</productDataVersion>
                     <startupTimeout>36000000</startupTimeout>
-                    <!-- <jvmArgs>-Xms8192m -Xmx12288m</jvmArgs> -->
                     <jvmArgs>-Xms8192m -Xmx12288m --add-opens java.base/jdk.internal.misc=ALL-UNNAMED</jvmArgs>
-                    <!-- Uncomment to install TestKit backdoor in JIRA. -->
-                    <!--
-                    <pluginArtifacts>
-                        <pluginArtifact>
-                            <groupId>com.atlassian.jira.tests</groupId>
-                            <artifactId>jira-testkit-plugin</artifactId>
-                            <version>${testkit.version}</version>
-                        </pluginArtifact>
-                    </pluginArtifacts>
-                    -->
                     <enableQuickReload>true</enableQuickReload>
-
-                    <!-- See here for an explanation of default instructions: -->
-                    <!-- https://developer.atlassian.com/docs/advanced-topics/configuration-of-instructions-in-atlassian-plugins -->
+                    <banningExcludes>
+                        <exclude>com.google.code.findbugs:jsr305</exclude>
+                        <exclude>com.fasterxml.jackson.core:jackson-annotations</exclude>
+                        <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+                        <exclude>net.bytebuddy:byte-buddy</exclude>
+                        <exclude>jakarta.servlet:jakarta.servlet-api</exclude>
+                        <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+                    </banningExcludes>
+                </configuration>
+            </plugin>
+            
+            <!-- Add the Maven Bundle Plugin -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.8</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
                     <instructions>
                         <Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
-
-                        <!-- Add package to export here -->
-                        <!-- <Export-Package>
-                            com.hanlinuniverse.playground.JiraMCPServer.api,
-                        </Export-Package> -->
-
-                        <!-- Add package import here -->
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>
+                            com.hanlinuniverse.playground.JiraMCPServer.api;version="${project.version}"
+                        </Export-Package>
                         <Import-Package>
                             org.springframework.osgi.*;resolution:="optional",
                             org.eclipse.gemini.blueprint.*;resolution:="optional",
-                            <!-- com.fasterxml.jackson.core.type, -->
-                            com.fasterxml.jackson.core.type;version="[2.15.0,3.0.0)";resolution:=optional,
-                            com.fasterxml.jackson.databind.*;version="[2.15.0,3.0.0)",
-                            com.fasterxml.jackson.annotation.*;version="[2.15.0,3.0.0)",
-                            com.sun.jna;resolution:="optional",
-                            javax.annotation.meta;resolution:="optional",
-                            reactor.core.*;version="[3.5.0,4.0.0)",
-                            io.micrometer.context.*;version="[1.0.0,2.0.0)",
-                            io.micrometer.core.*;version="[1.10.0,2.0.0)",
-                            ch.qos.logback.*;version="[1.2.0,2.0.0)",
+                            com.atlassian.*;resolution:="mandatory",
+                            javax.servlet.*;resolution:="mandatory",
+                            javax.ws.rs.*;resolution:="mandatory",
                             !jdk.internal.*,
-                            *
+                            !com.sun.jna.*,
+                            !javax.annotation.meta.*,
+                            !com.fasterxml.jackson.*,
+                            !reactor.core.*,
+                            !io.micrometer.*,
+                            !ch.qos.logback.*,
+                            *;resolution:=optional
                         </Import-Package>
+                        <Embed-Dependency>
+                            jackson-core,
+                            jackson-databind,
+                            jackson-annotations,
+                            jna,
+                            jsr305,
+                            reactive-streams,
+                            reactor-core,
+                            context-propagation,
+                            micrometer-core,
+                            logback-classic,
+                            logback-core,
+                            mcp;inline=false
+                        </Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                         <DynamicImport-Package>jdk.internal.*</DynamicImport-Package>
-
-                        <!-- Ensure plugin is spring powered -->
                         <Spring-Context>*</Spring-Context>
+                        
+                        <!-- This ensures we use the manifest generated by the maven-bundle-plugin -->
+                        <_plugin>org.apache.felix.bundleplugin.BundlePlugin</_plugin>
                     </instructions>
-
-                    <banningExcludes>
-                        <exclude>jakarta.servlet:jakarta.servlet-api</exclude>
-                        <exclude>com.fasterxml.jackson.core:jackson-annotations</exclude>
-                        <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
-                        <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
-                        <exclude>net.bytebuddy:byte-buddy</exclude>
-                        <exclude>com.google.code.findbugs:jsr305</exclude>
-                        <exclude>io.projectreactor:reactor-core</exclude>
-                        <exclude>io.micrometer:context-propagation</exclude>
-                        <exclude>io.micrometer:micrometer-core</exclude>
-                        <exclude>ch.qos.logback:logback-classic</exclude>
-                    </banningExcludes>
-
+                    <supportedProjectTypes>
+                        <supportedProjectType>atlassian-plugin</supportedProjectType>
+                    </supportedProjectTypes>
                 </configuration>
             </plugin>
+            
+            <!-- Keep the atlassian-spring-scanner-maven-plugin as it was -->
             <plugin>
                 <groupId>com.atlassian.plugin</groupId>
                 <artifactId>atlassian-spring-scanner-maven-plugin</artifactId>
