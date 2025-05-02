@@ -1,13 +1,13 @@
 package com.hanlinuniverse.playground.JiraMCPServer.mcp.prompts;
 
-import io.modelcontextprotocol.sdk.McpSchema;
-import io.modelcontextprotocol.sdk.McpSchema.GetPromptResult;
-import io.modelcontextprotocol.sdk.McpSchema.Prompt;
-import io.modelcontextprotocol.sdk.McpSchema.PromptArgument;
-import io.modelcontextprotocol.sdk.McpSchema.SamplingMessage;
-import io.modelcontextprotocol.sdk.McpSchema.Role;
-import io.modelcontextprotocol.sdk.McpSchema.TextContent;
-import io.modelcontextprotocol.sdk.McpServerFeatures;
+import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.GetPromptResult;
+import io.modelcontextprotocol.spec.McpSchema.Prompt;
+import io.modelcontextprotocol.spec.McpSchema.PromptArgument;
+import io.modelcontextprotocol.spec.McpSchema.PromptMessage;
+import io.modelcontextprotocol.spec.McpSchema.Role;
+import io.modelcontextprotocol.spec.McpSchema.TextContent;
+import io.modelcontextprotocol.server.McpServerFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,10 +71,10 @@ public class JiraPromptProvider {
                 String issueDescription = "This is a sample issue description for " + issueKey;
                 
                 // Create the prompt messages
-                List<SamplingMessage> messages = new ArrayList<>();
+                List<PromptMessage> messages = new ArrayList<>();
                 
-                // System message
-                messages.add(new SamplingMessage(Role.SYSTEM, new TextContent(
+                // System message - in MCP SDK 0.9.0, Role.SYSTEM has been renamed
+                messages.add(new PromptMessage(Role.ASSISTANT, new TextContent(
                     "You are a Jira assistant that summarizes issues concisely. " +
                     "Focus on the key points and provide a clear, structured summary."
                 )));
@@ -91,7 +91,7 @@ public class JiraPromptProvider {
                     userMessage.append("- Comment 2: Another sample comment\n");
                 }
                 
-                messages.add(new SamplingMessage(Role.USER, new TextContent(userMessage.toString())));
+                messages.add(new PromptMessage(Role.USER, new TextContent(userMessage.toString())));
                 
                 // Return the prompt
                 return new GetPromptResult(
@@ -131,10 +131,10 @@ public class JiraPromptProvider {
                         .build());
                 
                 // Create the prompt messages
-                List<SamplingMessage> messages = new ArrayList<>();
+                List<PromptMessage> messages = new ArrayList<>();
                 
-                // System message
-                messages.add(new SamplingMessage(Role.SYSTEM, new TextContent(
+                // System message - in MCP SDK 0.9.0, Role.SYSTEM has been renamed
+                messages.add(new PromptMessage(Role.ASSISTANT, new TextContent(
                     "You are a Jira assistant that helps create well-structured issues. " +
                     "Based on the description provided, generate a proper issue with a clear summary, " +
                     "detailed description, and appropriate fields. " +
@@ -149,7 +149,7 @@ public class JiraPromptProvider {
                           .append(" based on the following description:\n\n")
                           .append(description);
                 
-                messages.add(new SamplingMessage(Role.USER, new TextContent(userMessage.toString())));
+                messages.add(new PromptMessage(Role.USER, new TextContent(userMessage.toString())));
                 
                 // Return the prompt
                 return new GetPromptResult(
@@ -189,10 +189,10 @@ public class JiraPromptProvider {
                         .build());
                 
                 // Create the prompt messages
-                List<SamplingMessage> messages = new ArrayList<>();
+                List<PromptMessage> messages = new ArrayList<>();
                 
-                // System message
-                messages.add(new SamplingMessage(Role.SYSTEM, new TextContent(
+                // System message - in MCP SDK 0.9.0, Role.SYSTEM has been renamed
+                messages.add(new PromptMessage(Role.ASSISTANT, new TextContent(
                     "You are a code review assistant that provides thorough, constructive feedback. " +
                     "Focus on code quality, best practices, potential bugs, security issues, and performance improvements. " +
                     "Be specific in your feedback and provide examples of how to improve the code when possible. " +
@@ -209,7 +209,7 @@ public class JiraPromptProvider {
                     userMessage.append("Additional context:\n").append(context);
                 }
                 
-                messages.add(new SamplingMessage(Role.USER, new TextContent(userMessage.toString())));
+                messages.add(new PromptMessage(Role.USER, new TextContent(userMessage.toString())));
                 
                 // Return the prompt
                 return new GetPromptResult(

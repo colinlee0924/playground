@@ -1,6 +1,6 @@
 package com.hanlinuniverse.playground.JiraMCPServer.config;
 
-import io.modelcontextprotocol.sdk.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema;
 
 import java.io.File;
 import java.io.FileInputStream;

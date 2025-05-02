@@ -2,15 +2,15 @@ package com.hanlinuniverse.playground.JiraMCPServer.mcp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanlinuniverse.playground.JiraMCPServer.mcp.tools.JiraToolProvider;
-import com.hanlinuniverse.playground.JiraMCPServer.mcp.resources.JiraResourceProvider;
+// import com.hanlinuniverse.playground.JiraMCPServer.mcp.resources.JiraResourceProvider;
 import com.hanlinuniverse.playground.JiraMCPServer.mcp.prompts.JiraPromptProvider;
-import io.modelcontextprotocol.sdk.McpServer;
-import io.modelcontextprotocol.sdk.McpServerFeatures;
-import io.modelcontextprotocol.sdk.McpSyncServer;
-import io.modelcontextprotocol.sdk.ServerCapabilities;
-import io.modelcontextprotocol.sdk.transport.HttpServletSseServerTransportProvider;
+import io.modelcontextprotocol.server.McpServer;
+import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.server.McpSyncServer;
+import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
+import io.modelcontextprotocol.server.transport.HttpServletSseServerTransportProvider;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import java.util.List;
 
 /**
@@ -66,9 +66,9 @@ public class JiraMcpServerFactory {
             capabilitiesBuilder.tools(true);
         }
         
-        if (enableResources) {
-            capabilitiesBuilder.resources(true);
-        }
+        // if (enableResources) {
+        //     capabilitiesBuilder.resources(true, true);
+        // }
         
         if (enablePrompts) {
             capabilitiesBuilder.prompts(true);
@@ -123,13 +123,14 @@ public class JiraMcpServerFactory {
     
     /**
      * Register all available resources with the server.
-     * 
+     *
      * @param server The MCP server
      * @param resourceProvider The resource provider
      * @param servletContext The servlet context for logging
      */
+    /*
     public static void registerResources(
-            McpSyncServer server, 
+            McpSyncServer server,
             JiraResourceProvider resourceProvider,
             ServletContext servletContext) {
         
@@ -143,6 +144,7 @@ public class JiraMcpServerFactory {
             }
         }
     }
+    */
     
     /**
      * Register all available prompts with the server.

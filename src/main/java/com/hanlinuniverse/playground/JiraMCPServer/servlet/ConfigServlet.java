@@ -1,7 +1,7 @@
 package com.hanlinuniverse.playground.JiraMCPServer.servlet;
 
 import com.hanlinuniverse.playground.JiraMCPServer.config.McpServerConfig;
-import io.modelcontextprotocol.sdk.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

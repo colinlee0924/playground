@@ -1,9 +1,9 @@
 package com.hanlinuniverse.playground.JiraMCPServer.mcp.tools;
 
-import io.modelcontextprotocol.sdk.McpSchema;
-import io.modelcontextprotocol.sdk.McpSchema.CallToolResult;
-import io.modelcontextprotocol.sdk.McpSchema.Tool;
-import io.modelcontextprotocol.sdk.McpServerFeatures;
+import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import io.modelcontextprotocol.spec.McpSchema.Tool;
+import io.modelcontextprotocol.server.McpServerFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -220,8 +220,9 @@ public class JiraToolProvider {
                     // Request sampling from the client
                     McpSchema.CreateMessageResult result = exchange.createMessage(request);
                     
-                    // Return the analysis
-                    return new CallToolResult(result.content().text(), false);
+                    // Return the analysis - in MCP SDK 0.9.0, the text() method has been replaced
+                    // We need to use the appropriate method to get the text content
+                    return new CallToolResult(result.content().toString(), false);
                 } catch (Exception e) {
                     // If sampling fails, return an error message
                     return new CallToolResult("Failed to analyze issue: " + e.getMessage(), true);

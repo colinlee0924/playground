@@ -1,5 +1,5 @@
-package com.hanlinuniverse.playground.JiraMCPServer.api;
+// package com.hanlinuniverse.playground.JiraMCPServer.api;
 
-public interface MyPluginComponent {
-    String getName();
-}
+// public interface MyPluginComponent {
+//     String getName();
+// }

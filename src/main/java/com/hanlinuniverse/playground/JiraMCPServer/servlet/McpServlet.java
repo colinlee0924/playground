@@ -3,15 +3,15 @@ package com.hanlinuniverse.playground.JiraMCPServer.servlet;
 import com.hanlinuniverse.playground.JiraMCPServer.config.McpServerConfig;
 import com.hanlinuniverse.playground.JiraMCPServer.mcp.JiraMcpServerFactory;
 import com.hanlinuniverse.playground.JiraMCPServer.mcp.tools.JiraToolProvider;
-import com.hanlinuniverse.playground.JiraMCPServer.mcp.resources.JiraResourceProvider;
+// import com.hanlinuniverse.playground.JiraMCPServer.mcp.resources.JiraResourceProvider;
 import com.hanlinuniverse.playground.JiraMCPServer.mcp.prompts.JiraPromptProvider;
-import io.modelcontextprotocol.sdk.McpSyncServer;
-import io.modelcontextprotocol.sdk.transport.HttpServletSseServerTransportProvider;
+import io.modelcontextprotocol.server.McpSyncServer;
+import io.modelcontextprotocol.server.transport.HttpServletSseServerTransportProvider;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class McpServlet extends HttpServlet {
     private HttpServletSseServerTransportProvider transportProvider;
     private McpSyncServer mcpServer;
     private JiraToolProvider toolProvider;
-    private JiraResourceProvider resourceProvider;
+    // private JiraResourceProvider resourceProvider;
     private JiraPromptProvider promptProvider;
     private McpServerConfig config;
     
@@ -46,12 +46,14 @@ public class McpServlet extends HttpServlet {
             getServletContext()
         );
         
-        // Get transport provider from server
-        transportProvider = (HttpServletSseServerTransportProvider) mcpServer.getTransportProvider();
+        // Get transport provider - in MCP SDK 0.9.0, we need to create it separately
+        // The transportProvider is already created and passed to the server
+        // We'll create it directly here
+        transportProvider = new HttpServletSseServerTransportProvider(new com.fasterxml.jackson.databind.ObjectMapper(), MESSAGE_PATH);
         
         // Initialize providers
         toolProvider = new JiraToolProvider();
-        resourceProvider = new JiraResourceProvider();
+        // resourceProvider = new JiraResourceProvider();
         promptProvider = new JiraPromptProvider();
         
         // Register features if enabled
@@ -59,9 +61,11 @@ public class McpServlet extends HttpServlet {
             JiraMcpServerFactory.registerTools(mcpServer, toolProvider, getServletContext());
         }
         
+        /*
         if (config.isResourcesEnabled()) {
             JiraMcpServerFactory.registerResources(mcpServer, resourceProvider, getServletContext());
         }
+        */
         
         if (config.isPromptsEnabled()) {
             JiraMcpServerFactory.registerPrompts(mcpServer, promptProvider, getServletContext());
@@ -72,7 +76,8 @@ public class McpServlet extends HttpServlet {
     
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Delegate to transport provider
+        // In MCP SDK 0.9.0, we need to delegate to the transport provider
+        // The HttpServletSseServerTransportProvider extends HttpServlet, so we can use its service method
         transportProvider.service(req, resp);
     }
     
