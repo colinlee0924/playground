@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jira 點→線→面 示意序列 v2 (純 HTML/SVG)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap');
+    :root{
+      --bg:#0f172a; /* slate-900 */
+      --panel:#111827; /* gray-900 */
+      --text:#e5e7eb; /* gray-200 */
+      --muted:#94a3b8; /* slate-400 */
+      --accent:#60a5fa; /* blue-400 */
+      --w:#3b82f6; /* W 藍 */
+      --i:#22c55e; /* I 綠 */
+      --wt:#f59e0b; /* WT 橘 */
+      --ct:#a855f7; /* CT 紫 */
+      --cross:#9ca3af; /* 跨產品線 灰 */
+    }
+    html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family:'Noto Sans TC',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
+    .deck{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;}
+    .slide{position:absolute; inset:0; padding:32px 48px; display:none;}
+    .slide.active{display:block;}
+    .stage{width:100%; height:100%; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); border:1px solid rgba(255,255,255,0.06); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.35); overflow:hidden;}
+    .header{display:flex; align-items:center; justify-content:space-between; padding:20px 28px; border-bottom:1px solid rgba(255,255,255,0.08);}
+    .title{font-size:36px; font-weight:700; letter-spacing:0.5px;}
+    .subtitle{font-size:16px; color:var(--muted)}
+    .content{padding:24px 28px; height:calc(100% - 88px);}
+    .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:24px; height:100%;}
+    .col{background:var(--panel); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px;}
+    .kpi{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+    .card{background:var(--panel); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px;}
+    .legend{display:flex; gap:16px; align-items:center;}
+    .dot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px;}
+    .footer{position:absolute; bottom:12px; right:24px; color:var(--muted); font-size:14px}
+    .hint{position:absolute; bottom:12px; left:24px; color:var(--muted); font-size:14px}
+
+    /* Utility */
+    .row{display:flex; gap:16px; align-items:center}
+    .mb8{margin-bottom:8px}
+    .mb16{margin-bottom:16px}
+    .mb24{margin-bottom:24px}
+  </style>
+</head>
+<body>
+<div class="deck" id="deck">
+  <!-- Slide 1: 封面 -->
+  <section class="slide active" data-slide="1">
+    <div class="stage">
+      <div class="header">
+        <div class="title">Jira 平台：點 → 線 → 面</div>
+        <div class="subtitle">W=藍 / I=綠 / WT=橘 / CT=紫 / 跨產品線=灰</div>
+      </div>
+      <div class="content" style="display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 1280 640" width="100%" height="100%">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1f2937"/>
+              <stop offset="100%" stop-color="#0b1220"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="1280" height="640" rx="16" fill="url(#g1)" stroke="rgba(255,255,255,0.06)"/>
+          <g transform="translate(160,170)">
+            <circle cx="0" cy="0" r="14" fill="#e5e7eb"/>
+            <text x="32" y="6" fill="#e5e7eb" font-size="26" font-weight="600">點：單點系統建立</text>
+          </g>
+          <g transform="translate(160,300)">
+            <rect x="-14" y="-14" width="28" height="28" rx="6" fill="#e5e7eb"/>
+            <text x="32" y="6" fill="#e5e7eb" font-size="26" font-weight="600">線：產品線內流程串接</text>
+          </g>
+          <g transform="translate(160,430)">
+            <polygon points="0,-14 14,0 0,14 -14,0" fill="#e5e7eb"/>
+            <text x="32" y="6" fill="#e5e7eb" font-size="26" font-weight="600">面：跨產品線整合</text>
+          </g>
+        </svg>
+      </div>
+      <div class="hint">←/→ 或 ↑/↓ 切換投影片</div>
+      <div class="footer">Slide 1 / 8</div>
+    </div>
+  </section>
+
+  <!-- Slide 2: 痛點概覽 -->
+  <section class="slide" data-slide="2">
+    <div class="stage">
+      <div class="header">
+        <div class="title">痛點概覽（W / I / WT / CT）</div>
+        <div class="legend">
+          <span class="dot" style="background:var(--w)"></span>W
+          <span class="dot" style="background:var(--i)"></span>I
+          <span class="dot" style="background:var(--wt)"></span>WT
+          <span class="dot" style="background:var(--ct)"></span>CT
+        </div>
+      </div>
+      <div class="content grid">
+        <div class="col">
+          <h3>資訊與協作</h3>
+          <ul>
+            <li>Email/Excel/紙本，資訊分散</li>
+            <li>進度不透明，查詢耗時</li>
+            <li>跨單位溝通斷層</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>流程與品質</h3>
+          <ul>
+            <li>流程不一致、責任不清</li>
+            <li>狀態手動更新，容易遺漏</li>
+            <li>變更追蹤困難</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>工具與平台</h3>
+          <ul>
+            <li>缺乏標準化模板</li>
+            <li>報表零散，決策延遲</li>
+            <li>權限/安全與擴展性不足</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>期望成果</h3>
+          <ul>
+            <li>中心化、可追溯</li>
+            <li>自動化與即時可視</li>
+            <li>跨產品線治理</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer">Slide 2 / 8</div>
+    </div>
+  </section>
+
+  <!-- Slide 3: 點：各產品線單點系統 -->
+  <section class="slide" data-slide="3">
+    <div class="stage">
+      <div class="header">
+        <div class="title">點：各產品線單點系統（命名提案）</div>
+        <div class="subtitle">圓點=系統、區塊=產品線</div>
+      </div>
+      <div class="content" style="height:calc(100% - 88px);">
+        <svg viewBox="0 0 1280 620" width="100%" height="100%">
+          <!-- 四個產品線區塊 -->
+          <g font-size="16" font-weight="600">
+            <rect x="40" y="40" width="560" height="250" rx="10" fill="rgba(59,130,246,0.08)" stroke="var(--w)"/>
+            <text x="50" y="64" fill="var(--w)">W</text>
+            <rect x="680" y="40" width="560" height="250" rx="10" fill="rgba(34,197,94,0.08)" stroke="var(--i)"/>
+            <text x="690" y="64" fill="var(--i)">I</text>
+            <rect x="40" y="330" width="560" height="250" rx="10" fill="rgba(245,158,11,0.08)" stroke="var(--wt)"/>
+            <text x="50" y="354" fill="var(--wt)">WT</text>
+            <rect x="680" y="330" width="560" height="250" rx="10" fill="rgba(168,85,247,0.08)" stroke="var(--ct)"/>
+            <text x="690" y="354" fill="var(--ct)">CT</text>
+          </g>
+          <!-- W 系統點 -->
+          <g fill="#e5e7eb" font-size="14">
+            <circle cx="160" cy="120" r="14" fill="var(--w)"/><text x="180" y="125">F-System(公版)</text>
+            <circle cx="160" cy="170" r="10" fill="var(--w)"/><text x="178" y="174">W-F-Extension</text>
+            <circle cx="160" cy="210" r="10" fill="var(--w)"/><text x="178" y="214">W-TestFlow</text>
+            <circle cx="350" cy="170" r="10" fill="var(--w)"/><text x="368" y="174">W-ReleaseCtrl</text>
+            <circle cx="350" cy="210" r="10" fill="var(--w)"/><text x="368" y="214">W-DefectHub</text>
+          </g>
+          <!-- I 系統點 -->
+          <g fill="#e5e7eb" font-size="14">
+            <circle cx="800" cy="120" r="14" fill="var(--i)"/><text x="820" y="125">F-System(公版)</text>
+            <circle cx="800" cy="170" r="10" fill="var(--i)"/><text x="818" y="174">I-F-Extension</text>
+            <circle cx="800" cy="210" r="10" fill="var(--i)"/><text x="818" y="214">I-QA-Board</text>
+            <circle cx="990" cy="170" r="10" fill="var(--i)"/><text x="1008" y="174">I-ChangeMgmt</text>
+            <circle cx="990" cy="210" r="10" fill="var(--i)"/><text x="1008" y="214">I-DefectHub</text>
+          </g>
+          <!-- WT 系統點 -->
+          <g fill="#e5e7eb" font-size="14">
+            <circle cx="160" cy="410" r="10" fill="var(--wt)"/><text x="178" y="414">WT-FCI</text>
+            <circle cx="160" cy="450" r="10" fill="var(--wt)"/><text x="178" y="454">WT-HWTracking</text>
+            <circle cx="350" cy="410" r="10" fill="var(--wt)"/><text x="368" y="414">WT-ECN-Flow</text>
+            <circle cx="350" cy="450" r="10" fill="var(--wt)"/><text x="368" y="454">WT-DefectHub</text>
+          </g>
+          <!-- CT 系統點 -->
+          <g fill="#e5e7eb" font-size="14">
+            <circle cx="800" cy="410" r="10" fill="var(--ct)"/><text x="818" y="414">CT-FCI</text>
+            <circle cx="800" cy="450" r="10" fill="var(--ct)"/><text x="818" y="454">CT-HWTracking</text>
+            <circle cx="990" cy="410" r="10" fill="var(--ct)"/><text x="1008" y="414">CT-ComponentLib</text>
+            <circle cx="990" cy="450" r="10" fill="var(--ct)"/><text x="1008" y="454">CT-DefectHub</text>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 3 / 8</div>
+    </div>
+  </section>
+
+  <!-- Slide 4: 公版與客製 -->
+  <section class="slide" data-slide="4">
+    <div class="stage">
+      <div class="header">
+        <div class="title">公版與客製（F-System → W/I 分支）</div>
+        <div class="subtitle">共用核心 → 依差異客製</div>
+      </div>
+      <div class="content">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <g font-size="16" fill="#e5e7eb">
+            <rect x="560" y="80" width="160" height="60" rx="10" fill="#1f2937" stroke="var(--cross)"/>
+            <text x="580" y="115">F-System(公版)</text>
+
+            <rect x="260" y="300" width="220" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="290" y="335">W-F-Extension</text>
+
+            <rect x="800" y="300" width="220" height="56" rx="10" fill="#083b2b" stroke="var(--i)"/>
+            <text x="830" y="335">I-F-Extension</text>
+
+            <path d="M640 140 C 640 200, 420 220, 370 300" stroke="var(--w)" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+            <path d="M640 140 C 640 200, 860 220, 910 300" stroke="var(--i)" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          </g>
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#e5e7eb" />
+            </marker>
+          </defs>
+        </svg>
+      </div>
+      <div class="footer">Slide 4 / 8</div>
+    </div>
+  </section>
+
+  <!-- Slide 5: 線：W 範例 -->
+  <section class="slide" data-slide="5">
+    <div class="stage">
+      <div class="header">
+        <div class="title">線：產品線內串接（W 範例）</div>
+        <div class="subtitle">狀態自動、任務回寫、事件通知</div>
+      </div>
+      <div class="content">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <defs>
+            <marker id="arroww" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="var(--w)" />
+            </marker>
+          </defs>
+          <g font-size="16" fill="#e5e7eb">
+            <rect x="120" y="220" width="200" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="150" y="255">需求：F-System</text>
+
+            <rect x="360" y="220" width="220" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="395" y="255">開發：W-F-Extension</text>
+
+            <rect x="630" y="220" width="200" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="665" y="255">測試：W-TestFlow</text>
+
+            <rect x="870" y="220" width="200" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="900" y="255">缺陷：W-DefectHub</text>
+
+            <rect x="1110" y="220" width="200" height="56" rx="10" fill="#122c5a" stroke="var(--w)" transform="translate(-140,0)"/>
+            <text x="1005" y="255">版本：W-ReleaseCtrl</text>
+
+            <path d="M320 248 H 360" stroke="var(--w)" stroke-width="3" fill="none" marker-end="url(#arroww)"/>
+            <path d="M580 248 H 630" stroke="var(--w)" stroke-width="3" fill="none" marker-end="url(#arroww)"/>
+            <path d="M830 248 H 870" stroke="var(--w)" stroke-width="3" fill="none" marker-end="url(#arroww)"/>
+            <path d="M1070 248 H 1110" stroke="var(--w)" stroke-width="3" fill="none" marker-end="url(#arroww)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 5 / 8</div>
+    </div>
+  </section>
+
+  <!-- Slide 6: 線：WT / CT 硬體導向 -->
+  <section class="slide" data-slide="6">
+    <div class="stage">
+      <div class="header">
+        <div class="title">線：WT / CT 硬體導向流程</div>
+        <div class="subtitle">料號 / 變更單 / 相容性檢核</div>
+      </div>
+      <div class="content">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <defs>
+            <marker id="arrowo" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#f59e0b" />
+            </marker>
+            <marker id="arrowp" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#a855f7" />
+            </marker>
+          </defs>
+          <g font-size="16" fill="#e5e7eb">
+            <text x="140" y="120" fill="var(--wt)" font-weight="700">WT</text>
+            <rect x="120" y="140" width="220" height="54" rx="10" fill="#3d2a04" stroke="var(--wt)"/>
+            <text x="180" y="173">WT-FCI</text>
+            <rect x="370" y="140" width="220" height="54" rx="10" fill="#3d2a04" stroke="var(--wt)"/>
+            <text x="415" y="173">WT-HWTracking</text>
+            <rect x="620" y="140" width="220" height="54" rx="10" fill="#3d2a04" stroke="var(--wt)"/>
+            <text x="675" y="173">WT-ECN-Flow</text>
+            <path d="M340 167 H 370" stroke="var(--wt)" stroke-width="3" marker-end="url(#arrowo)"/>
+            <path d="M590 167 H 620" stroke="var(--wt)" stroke-width="3" marker-end="url(#arrowo)"/>
+            <path d="M370 167 H 340" stroke="var(--wt)" stroke-width="3" marker-end="url(#arrowo)"/>
+            <path d="M620 167 H 590" stroke="var(--wt)" stroke-width="3" marker-end="url(#arrowo)"/>
+
+            <text x="140" y="320" fill="var(--ct)" font-weight="700">CT</text>
+            <rect x="120" y="340" width="220" height="54" rx="10" fill="#2b0b3e" stroke="var(--ct)"/>
+            <text x="190" y="373">CT-FCI</text>
+            <rect x="370" y="340" width="220" height="54" rx="10" fill="#2b0b3e" stroke="var(--ct)"/>
+            <text x="425" y="373">CT-HWTracking</text>
+            <rect x="620" y="340" width="240" height="54" rx="10" fill="#2b0b3e" stroke="var(--ct)"/>
+            <text x="670" y="373">CT-ComponentLib</text>
+            <path d="M340 367 H 370" stroke="var(--ct)" stroke-width="3" marker-end="url(#arrowp)"/>
+            <path d="M590 367 H 620" stroke="var(--ct)" stroke-width="3" marker-end="url(#arrowp)"/>
+            <path d="M370 367 H 340" stroke="var(--ct)" stroke-width="3" marker-end="url(#arrowp)"/>
+            <path d="M620 367 H 590" stroke="var(--ct)" stroke-width="3" marker-end="url(#arrowp)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 6 / 8</div>
+    </div>
+  </section>
+
+  <!-- Slide 7: 面：跨產品線整合 R-System -->
+  <section class="slide" data-slide="7">
+    <div class="stage">
+      <div class="header">
+        <div class="title">面：跨產品線整合（R-System 中心回寫）</div>
+        <div class="subtitle">共用節點、規範與治理</div>
+      </div>
+      <div class="content">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <defs>
+            <marker id="arrowg" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#9ca3af" />
+            </marker>
+          </defs>
+          <g font-size="16" fill="#e5e7eb">
+            <circle cx="640" cy="280" r="60" fill="#2b2f36" stroke="var(--cross)" stroke-width="3"/>
+            <text x="610" y="286" font-weight="700" fill="#d1d5db">R-System</text>
+
+            <rect x="220" y="120" width="200" height="50" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="240" y="152">W-ReleaseCtrl</text>
+            <rect x="900" y="120" width="200" height="50" rx="10" fill="#083b2b" stroke="var(--i)"/>
+            <text x="940" y="152">I-ChangeMgmt</text>
+            <rect x="220" y="390" width="200" height="50" rx="10" fill="#3d2a04" stroke="var(--wt)"/>
+            <text x="255" y="422">WT-ECN-Flow</text>
+            <rect x="900" y="390" width="200" height="50" rx="10" fill="#2b0b3e" stroke="var(--ct)"/>
+            <text x="930" y="422">CT-ComponentLib</text>
+
+            <!-- 輻射連線與回寫 -->
+            <path d="M420 145 C 500 145, 560 220, 640 240" stroke="var(--cross)" stroke-width="3" fill="none" marker-end="url(#arrowg)"/>
+            <path d="M1100 145 C 980 145, 720 220, 640 240" stroke="var(--cross)" stroke-width="3" fill="none" marker-end="url(#arrowg)"/>
+            <path d="M420 415 C 520 415, 560 340, 640 320" stroke="var(--cross)" stroke-width="3" fill="none" marker-end="url(#arrowg)"/>
+            <path d="M1100 415 C 980 415, 720 340, 640 320" stroke="var(--cross)" stroke-width="3" fill="none" marker-end="url(#arrowg)"/>
+
+            <!-- 回寫 -->
+            <path d="M640 320 C 560 340, 520 415, 420 415" stroke="var(--cross)" stroke-width="2" stroke-dasharray="6 6" fill="none" marker-end="url(#arrowg)"/>
+            <path d="M640 320 C 720 340, 980 415, 1100 415" stroke="var(--cross)" stroke-width="2" stroke-dasharray="6 6" fill="none" marker-end="url(#arrowg)"/>
+            <path d="M640 240 C 560 220, 500 145, 420 145" stroke="var(--cross)" stroke-width="2" stroke-dasharray="6 6" fill="none" marker-end="url(#arrowg)"/>
+            <path d="M640 240 C 720 220, 980 145, 1100 145" stroke="var(--cross)" stroke-width="2" stroke-dasharray="6 6" fill="none" marker-end="url(#arrowg)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 7 / 8</div>
+    </div>
+  </section>
+
+  <!-- Slide 8: 里程碑與成效 -->
+  <section class="slide" data-slide="8">
+    <div class="stage">
+      <div class="header">
+        <div class="title">里程碑與導入成效</div>
+        <div class="subtitle">2022 → 2025</div>
+      </div>
+      <div class="content">
+        <div class="kpi">
+          <div class="card">
+            <h3>時間軸</h3>
+            <ul>
+              <li>2022：W/I 建立 F-System 公版</li>
+              <li>2023：各線客製與擴充（WT/CT 單點）</li>
+              <li>2024：跨產品線應用起步（R-System 驗證）</li>
+              <li>2025：多線整合完成與回寫閉環</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>導入前 → 導入後</h3>
+            <ul>
+              <li>分散 → 中心化、可追溯</li>
+              <li>手動通知 → 自動化事件與狀態</li>
+              <li>黑箱 → 即時透明的儀表板/報表</li>
+              <li>孤島 → 跨產品線流程整合</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer">Slide 8 / 8</div>
+    </div>
+  </section>
+
+  <!-- Slide 9: 亮點成果（已完成） -->
+  <section class="slide" data-slide="9">
+    <div class="stage">
+      <div class="header">
+        <div class="title">亮點成果回顧（已完成）</div>
+        <div class="subtitle">AM 系統、APM 系統、AI Agent 智慧查詢（實線）</div>
+      </div>
+      <div class="content">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <defs>
+            <marker id="arrowSolid" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#e5e7eb" />
+            </marker>
+          </defs>
+          <g font-size="16" fill="#e5e7eb">
+            <!-- 中央：AI Agent（跨產品線） -->
+            <circle cx="640" cy="280" r="60" fill="#2b2f36" stroke="var(--cross)" stroke-width="3"/>
+            <text x="606" y="276" font-weight="700">AI Agent</text>
+            <text x="608" y="298" fill="#cbd5e1">智慧查詢</text>
+
+            <!-- 四個產品線節點 -->
+            <rect x="240" y="120" width="160" height="46" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="296" y="148">W</text>
+            <rect x="880" y="120" width="160" height="46" rx="10" fill="#083b2b" stroke="var(--i)"/>
+            <text x="938" y="148">I</text>
+            <rect x="240" y="390" width="160" height="46" rx="10" fill="#3d2a04" stroke="var(--wt)"/>
+            <text x="292" y="418">WT</text>
+            <rect x="880" y="390" width="160" height="46" rx="10" fill="#2b0b3e" stroke="var(--ct)"/>
+            <text x="932" y="418">CT</text>
+
+            <!-- 實線：AI Agent 與各產品線連線（已完成） -->
+            <path d="M640 220 V 166" stroke="var(--cross)" stroke-width="3" marker-end="url(#arrowSolid)"/>
+            <path d="M700 280 H 880" stroke="var(--cross)" stroke-width="3" marker-end="url(#arrowSolid)"/>
+            <path d="M640 340 V 390" stroke="var(--cross)" stroke-width="3" marker-end="url(#arrowSolid)"/>
+            <path d="M580 280 H 400" stroke="var(--cross)" stroke-width="3" marker-end="url(#arrowSolid)"/>
+
+            <!-- 車用產品線成果：AM / APM -->
+            <rect x="80" y="220" width="240" height="56" rx="10" fill="#1f2937" stroke="var(--accent)"/>
+            <text x="110" y="255">AM 系統（車用管理稽核）</text>
+            <rect x="960" y="220" width="240" height="56" rx="10" fill="#1f2937" stroke="#60a5fa"/>
+            <text x="990" y="255">APM 系統（車用專案軟體）</text>
+
+            <!-- 實線：成果關聯（示意） -->
+            <path d="M320 248 H 400" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowSolid)"/>
+            <path d="M960 248 H 820" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowSolid)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 9 / 10</div>
+    </div>
+  </section>
+
+  <!-- Slide 10: 進行中（虛線） -->
+  <section class="slide" data-slide="10">
+    <div class="stage">
+      <div class="header">
+        <div class="title">進行中：W 需求管理流程 AI 幫手</div>
+        <div class="subtitle">虛線表示進行中（導入中）</div>
+      </div>
+      <div class="content">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <defs>
+            <marker id="arrowDashed" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8" />
+            </marker>
+          </defs>
+          <g font-size="16" fill="#e5e7eb">
+            <!-- W 流程（沿用 Slide 5 佈局） -->
+            <rect x="120" y="220" width="200" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="150" y="255">需求：F-System</text>
+            <rect x="360" y="220" width="220" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="395" y="255">開發：W-F-Extension</text>
+            <rect x="630" y="220" width="200" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="665" y="255">測試：W-TestFlow</text>
+            <rect x="870" y="220" width="200" height="56" rx="10" fill="#122c5a" stroke="var(--w)"/>
+            <text x="900" y="255">缺陷：W-DefectHub</text>
+            <rect x="1110" y="220" width="200" height="56" rx="10" fill="#122c5a" stroke="var(--w)" transform="translate(-140,0)"/>
+            <text x="1005" y="255">版本：W-ReleaseCtrl</text>
+
+            <!-- AI 幫手（進行中，以虛線連到各節點） -->
+            <circle cx="640" cy="120" r="44" fill="#2b2f36" stroke="#94a3b8" stroke-width="3" stroke-dasharray="6 6"/>
+            <text x="618" y="118" font-weight="700">AI</text>
+            <text x="600" y="138" fill="#cbd5e1">助手</text>
+
+            <path d="M640 164 V 220" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6 6" marker-end="url(#arrowDashed)"/>
+            <path d="M596 132 L 360 220" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6 6" marker-end="url(#arrowDashed)"/>
+            <path d="M684 132 L 870 220" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6 6" marker-end="url(#arrowDashed)"/>
+            <path d="M704 144 L 970 220" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6 6" marker-end="url(#arrowDashed)"/>
+            <path d="M576 144 L 250 220" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6 6" marker-end="url(#arrowDashed)"/>
+
+            <!-- 說明 -->
+            <text x="120" y="420" fill="#cbd5e1">· 自動產生需求摘要與欄位建議</text>
+            <text x="120" y="450" fill="#cbd5e1">· 引導通關條件與狀態轉換</text>
+            <text x="120" y="480" fill="#cbd5e1">· 範本與規則校驗（語意/欄位完整性）</text>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 10 / 10</div>
+    </div>
+  </section>
+
+  <!-- Slide 11: 樹的隱喻 1/4 散葉（導入前） -->
+  <section class="slide" data-slide="11">
+    <div class="stage">
+      <div class="header">
+        <div class="title">樹的隱喻 1/4：散葉（導入前）</div>
+        <div class="subtitle">Email / Excel / 紙本 ─ 分散、不可見</div>
+      </div>
+      <div class="content" style="display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <defs>
+            <radialGradient id="fog" cx="50%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="rgba(148,163,184,0.25)"/>
+              <stop offset="100%" stop-color="rgba(148,163,184,0.02)"/>
+            </radialGradient>
+          </defs>
+          <rect x="0" y="0" width="1280" height="560" fill="url(#fog)"/>
+          <g fill="#cbd5e1" font-size="16">
+            <circle cx="260" cy="170" r="8"/><text x="276" y="175">需求</text>
+            <circle cx="420" cy="120" r="8"/><text x="436" y="125">開發</text>
+            <circle cx="620" cy="140" r="8"/><text x="636" y="145">測試</text>
+            <circle cx="860" cy="200" r="8"/><text x="876" y="205">缺陷</text>
+            <circle cx="1020" cy="150" r="8"/><text x="1036" y="155">版本</text>
+            <circle cx="300" cy="300" r="8"/><text x="316" y="305">FCI</text>
+            <circle cx="520" cy="360" r="8"/><text x="536" y="365">HWTracking</text>
+            <circle cx="760" cy="320" r="8"/><text x="776" y="325">ECN</text>
+            <circle cx="980" cy="360" r="8"/><text x="996" y="365">ComponentLib</text>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 11 / 14</div>
+    </div>
+  </section>
+
+  <!-- Slide 12: 樹的隱喻 2/4 枝條（單點系統成形） -->
+  <section class="slide" data-slide="12">
+    <div class="stage">
+      <div class="header">
+        <div class="title">樹的隱喻 2/4：枝條（單點系統成形）</div>
+        <div class="subtitle">工程風格：圓角枝條、晶片式葉節點</div>
+      </div>
+      <div class="content" style="display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <defs>
+            <!-- 背景網格 -->
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            </pattern>
+            <!-- 投影與漸層 -->
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.35)"/>
+            </filter>
+            <linearGradient id="branch" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#6b7280"/>
+              <stop offset="100%" stop-color="#cbd5e1"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="1280" height="560" fill="url(#grid)"/>
+          <!-- 圓角枝條 -->
+          <g stroke="url(#branch)" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M240 240 C 320 210, 360 190, 440 170"/>
+            <path d="M580 190 C 660 210, 760 230, 900 250"/>
+            <path d="M280 360 C 360 350, 460 350, 540 360"/>
+            <path d="M740 360 C 820 350, 900 350, 1000 360"/>
+          </g>
+          <!-- 晶片式葉節點 -->
+          <g font-size="14" fill="#e5e7eb" filter="url(#shadow)">
+            <rect x="240" y="226" rx="12" ry="12" width="90" height="28" fill="#3b82f6"/>
+            <text x="252" y="244">需求</text>
+            <rect x="440" y="156" rx="12" ry="12" width="90" height="28" fill="#3b82f6"/>
+            <text x="452" y="174">開發</text>
+            <rect x="580" y="176" rx="12" ry="12" width="90" height="28" fill="#3b82f6"/>
+            <text x="592" y="194">測試</text>
+            <rect x="900" y="236" rx="12" ry="12" width="90" height="28" fill="#3b82f6"/>
+            <text x="912" y="254">缺陷</text>
+
+            <rect x="280" y="346" rx="12" ry="12" width="96" height="28" fill="#f59e0b"/>
+            <text x="292" y="364">WT-FCI</text>
+            <rect x="520" y="346" rx="12" ry="12" width="126" height="28" fill="#f59e0b"/>
+            <text x="532" y="364">WT-HWTracking</text>
+            <rect x="740" y="346" rx="12" ry="12" width="88" height="28" fill="#a855f7"/>
+            <text x="752" y="364">WT-ECN</text>
+            <rect x="980" y="346" rx="12" ry="12" width="146" height="28" fill="#a855f7"/>
+            <text x="992" y="364">CT-ComponentLib</text>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 12 / 14</div>
+    </div>
+  </section>
+
+  <!-- Slide 13: 樹的隱喻 3/4 主幹（產品線內串聯） -->
+  <section class="slide" data-slide="13">
+    <div class="stage">
+      <div class="header">
+        <div class="title">樹的隱喻 3/4：主幹（產品線內串聯）</div>
+        <div class="subtitle">枝條匯入幹：流程閉環、回寫與監控</div>
+      </div>
+      <div class="content" style="display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <!-- 主幹 -->
+          <path d="M640 520 C 640 400, 640 200, 640 80" stroke="#8b5a2b" stroke-width="14" fill="none"/>
+          <!-- 分支到主幹（實線=完成、虛線=進行中） -->
+          <path d="M260 210 C 360 220, 500 220, 640 220" stroke="#60a5fa" stroke-width="4" fill="none"/>
+          <path d="M420 160 C 520 180, 560 200, 640 200" stroke="#60a5fa" stroke-width="4" fill="none"/>
+          <path d="M620 180 C 620 180, 630 190, 640 190" stroke="#60a5fa" stroke-width="4" fill="none"/>
+          <path d="M860 240 C 760 240, 700 230, 640 230" stroke="#60a5fa" stroke-width="4" fill="none"/>
+          <path d="M300 340 C 420 310, 520 300, 640 300" stroke="#60a5fa" stroke-width="4" fill="none"/>
+          <path d="M520 340 C 560 320, 600 310, 640 310" stroke="#60a5fa" stroke-width="4" fill="none"/>
+          <path d="M760 340 C 720 320, 680 310, 640 310" stroke="#60a5fa" stroke-width="4" fill="none" stroke-dasharray="8 8"/>
+          <path d="M980 340 C 860 320, 760 310, 640 310" stroke="#60a5fa" stroke-width="4" fill="none"/>
+          <!-- 節點文字 -->
+          <g fill="#e5e7eb" font-size="14">
+            <text x="648" y="90">主幹（平台治理）</text>
+            <text x="650" y="205">測試</text>
+            <text x="650" y="225">缺陷</text>
+            <text x="650" y="235">需求</text>
+            <text x="650" y="305">WT/CT 流程</text>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 13 / 14</div>
+    </div>
+  </section>
+
+  <!-- Slide 14: 樹的隱喻 4/4 工程式整合（跨產品線） -->
+  <section class="slide" data-slide="14">
+    <div class="stage">
+      <div class="header">
+        <div class="title">樹的隱喻 4/4：工程式整合（跨產品線）</div>
+        <div class="subtitle">R-System 作為中樞；實線=完成、虛線=進行中</div>
+      </div>
+      <div class="content" style="display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <!-- 中樞主幹與節點 -->
+          <path d="M640 520 C 640 420, 640 260, 640 160" stroke="#8b5a2b" stroke-width="14" fill="none"/>
+          <rect x="580" y="120" width="120" height="48" rx="12" fill="#1f2937" stroke="var(--cross)"/>
+          <text x="612" y="150" fill="#e5e7eb">R-System</text>
+          <!-- 四產品線連線（實/虛） -->
+          <g stroke="#60a5fa" stroke-width="3" fill="none">
+            <path d="M500 120 C 560 130, 600 140, 640 144"/>
+            <path d="M780 120 C 720 130, 680 140, 640 144"/>
+            <path d="M500 220 C 560 200, 600 176, 640 160" stroke-dasharray="8 8"/>
+            <path d="M780 220 C 720 200, 680 176, 640 160"/>
+          </g>
+          <!-- 產品線標籤 -->
+          <g font-size="14" fill="#e5e7eb">
+            <rect x="440" y="100" width="40" height="24" rx="6" fill="var(--w)"/><text x="450" y="118">W</text>
+            <rect x="820" y="100" width="40" height="24" rx="6" fill="var(--i)"/><text x="830" y="118">I</text>
+            <rect x="440" y="220" width="40" height="24" rx="6" fill="var(--wt)"/><text x="448" y="238">WT</text>
+            <rect x="820" y="220" width="40" height="24" rx="6" fill="var(--ct)"/><text x="828" y="238">CT</text>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 14 / 14</div>
+    </div>
+  </section>
+
+  <!-- Slide 15: 樹狀族譜風格總覽（純 SVG 模仿繪製） -->
+  <section class="slide" data-slide="15">
+    <div class="stage">
+      <div class="header">
+        <div class="title">樹狀族譜風格總覽（工程版）</div>
+        <div class="subtitle">膠囊節點、粗幹與分枝；實線=完成、虛線=進行中</div>
+      </div>
+      <div class="content" style="display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 1280 560" width="100%" height="100%">
+          <defs>
+            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.35)"/>
+            </filter>
+            <linearGradient id="bark" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#5e503f"/>
+              <stop offset="100%" stop-color="#3b2f2f"/>
+            </linearGradient>
+          </defs>
+
+          <!-- 主幹與主要枝條 -->
+          <g fill="none" stroke="url(#bark)" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M640 560 C 640 420, 640 320, 640 200" stroke-width="40"/>
+            <path d="M640 360 C 540 320, 460 280, 360 240" stroke-width="22"/>
+            <path d="M640 320 C 720 290, 820 260, 920 220" stroke-width="22"/>
+            <path d="M360 240 C 300 220, 220 200, 160 180" stroke-width="14"/>
+            <path d="M920 220 C 980 200, 1060 180, 1120 160" stroke-width="14"/>
+            <path d="M640 250 C 560 240, 500 220, 460 200" stroke-width="16"/>
+          </g>
+
+          <!-- 節點（膠囊） component function -->
+          <g font-size="14" fill="#e5e7eb" filter="url(#softShadow)">
+            <!-- 幹：平台/中樞 -->
+            <rect x="588" y="170" width="104" height="34" rx="17" fill="#1f2937" stroke="var(--cross)"/>
+            <text x="618" y="193">R-System</text>
+
+            <!-- 左大枝（W 系列）-->
+            <g>
+              <rect x="250" y="210" width="120" height="30" rx="15" fill="#122c5a" stroke="var(--w)"/>
+              <text x="270" y="229">W-F-Extension</text>
+              <rect x="210" y="170" width="110" height="30" rx="15" fill="#122c5a" stroke="var(--w)"/>
+              <text x="230" y="189">W-TestFlow</text>
+              <rect x="170" y="140" width="120" height="30" rx="15" fill="#122c5a" stroke="var(--w)"/>
+              <text x="190" y="159">W-DefectHub</text>
+              <rect x="300" y="250" width="130" height="30" rx="15" fill="#122c5a" stroke="var(--w)"/>
+              <text x="318" y="269">W-ReleaseCtrl</text>
+            </g>
+
+            <!-- 右大枝（I 系列）-->
+            <g>
+              <rect x="930" y="190" width="130" height="30" rx="15" fill="#083b2b" stroke="var(--i)"/>
+              <text x="952" y="209">I-F-Extension</text>
+              <rect x="980" y="160" width="110" height="30" rx="15" fill="#083b2b" stroke="var(--i)"/>
+              <text x="1002" y="179">I-QA-Board</text>
+              <rect x="1050" y="130" width="130" height="30" rx="15" fill="#083b2b" stroke="var(--i)"/>
+              <text x="1070" y="149">I-ChangeMgmt</text>
+              <rect x="900" y="220" width="110" height="30" rx="15" fill="#083b2b" stroke="var(--i)"/>
+              <text x="920" y="239">I-DefectHub</text>
+            </g>
+
+            <!-- 次枝（WT/CT）-->
+            <g>
+              <rect x="470" y="180" width="90" height="28" rx="14" fill="#3d2a04" stroke="var(--wt)"/>
+              <text x="486" y="198">WT-FCI</text>
+              <rect x="430" y="160" width="140" height="28" rx="14" fill="#3d2a04" stroke="var(--wt)"/>
+              <text x="442" y="178">WT-HWTracking</text>
+              <rect x="500" y="210" width="120" height="28" rx="14" fill="#3d2a04" stroke="var(--wt)"/>
+              <text x="512" y="228">WT-ECN-Flow</text>
+
+              <rect x="760" y="210" width="140" height="28" rx="14" fill="#2b0b3e" stroke="var(--ct)"/>
+              <text x="772" y="228">CT-ComponentLib</text>
+              <rect x="820" y="180" width="90" height="28" rx="14" fill="#2b0b3e" stroke="var(--ct)"/>
+              <text x="836" y="198">CT-FCI</text>
+              <rect x="840" y="150" width="140" height="28" rx="14" fill="#2b0b3e" stroke="var(--ct)"/>
+              <text x="852" y="168">CT-HWTracking</text>
+            </g>
+          </g>
+
+          <!-- 連線（實線=完成；虛線=進行中；WT 的部份用虛線示例） -->
+          <g stroke="#60a5fa" stroke-width="3" fill="none">
+            <!-- 從中樞到 W/I 完成路徑 -->
+            <path d="M640 188 C 560 200, 480 205, 370 220"/>
+            <path d="M640 188 C 740 200, 840 205, 930 205"/>
+            <!-- 進行中：到 WT/CT（虛線示例 WT-FCI/HWTracking） -->
+            <path d="M640 188 C 600 190, 540 190, 515 194" stroke-dasharray="8 8"/>
+            <path d="M640 188 C 700 185, 780 185, 820 190"/>
+          </g>
+
+          <!-- 圖例 -->
+          <g font-size="12" fill="#cbd5e1">
+            <rect x="40" y="40" width="14" height="3" fill="#60a5fa"/>
+            <text x="60" y="44">完成（實線）</text>
+            <path d="M40 60 h 14" stroke="#60a5fa" stroke-width="3" stroke-dasharray="8 8"/>
+            <text x="60" y="64">進行中（虛線）</text>
+          </g>
+        </svg>
+      </div>
+      <div class="footer">Slide 15 / 15</div>
+    </div>
+  </section>
+</div>
+
+<script>
+  (function(){
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    let idx = 0;
+
+    function show(i){
+      if (i < 0 || i >= slides.length) return;
+      slides[idx].classList.remove('active');
+      idx = i;
+      slides[idx].classList.add('active');
+      const footer = slides[idx].querySelector('.footer');
+      if (footer) footer.textContent = `Slide ${idx+1} / ${slides.length}`;
+    }
+
+    window.addEventListener('keydown', (e)=>{
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); show(idx+1); }
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'   || e.key === 'PageUp'   || e.key === 'Backspace') { e.preventDefault(); show(idx-1); }
+      if (e.key === 'Home') { e.preventDefault(); show(0); }
+      if (e.key === 'End') { e.preventDefault(); show(slides.length-1); }
+    });
+
+    // Click to advance
+    document.getElementById('deck').addEventListener('click', ()=> show(idx+1));
+
+    // Resize hint: ensure first slide active on load
+    show(0);
+  })();
+</script>
+</body>
+</html> 
